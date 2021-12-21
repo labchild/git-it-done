@@ -10,7 +10,6 @@ function getUserRepos(user) {
     // make request to url
     fetch(apiUrl).then(function(response){
         response.json().then(function(data) {
-           console.log(data);
            displayRepos(data, user);
         });
     });
@@ -47,8 +46,23 @@ function displayRepos(repos, searchTerm) {
         var titleEl = document.createElement("span");
         titleEl.textContent = repoName;
 
-        //append to repo name to list item
+        // create a status el
+        var statusEl = document.createElement("span");
+        statusEl.classList = "flex-row align-center";
+        // check if repo has open issues
+        if (repos[i].open_issues_count > 0) {
+            // is issues, show the count
+            statusEl.innerHTML = 
+            "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
+        } else {
+            // no issues, show cute check mark
+            statusEl.innerHTML = 
+            "<i class='fas fa-check-square status-icon icon-success'></i>";
+        }
+
+        //append to repo name and issues to list item
         repoEl.appendChild(titleEl);
+        repoEl.appendChild(statusEl);
 
         // append container to DOM
         repoContainerEl.appendChild(repoEl);
