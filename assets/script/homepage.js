@@ -8,11 +8,19 @@ function getUserRepos(user) {
     var apiUrl = 'https://api.github.com/users/' + user + '/repos';
 
     // make request to url
-    fetch(apiUrl).then(function(response){
-        response.json().then(function(data) {
-           displayRepos(data, user);
-        });
-    });
+    fetch(apiUrl).then(function (response) {
+        // check for error
+        if (response.ok) {
+            response.json().then(function (data) {
+                displayRepos(data, user);
+            });
+        } else {
+            alert("Error: GitHub user not found");
+        }
+    })
+    .catch(function(error) {
+        alert("Unable to connect to GitHub");
+    })
 };
 
 function formSubmitHandler(e) {
@@ -29,12 +37,16 @@ function formSubmitHandler(e) {
 };
 
 function displayRepos(repos, searchTerm) {
-    console.log(repos);
-    console.log(searchTerm);
     // clear old content
     repoContainerEl.textContent = "";
     repoSearchTerm.textContent = searchTerm;
+    
     // add new content to page
+    // if user has no repos, tell user
+    if (repos.length === 0) {
+        repoContainerEl.textContent = "No repositories found.";
+        return;
+    }
     // loop over repos
     for (var i = 0; i < repos.length; i++) {
         //format repo name
@@ -52,12 +64,12 @@ function displayRepos(repos, searchTerm) {
         // check if repo has open issues
         if (repos[i].open_issues_count > 0) {
             // is issues, show the count
-            statusEl.innerHTML = 
-            "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
+            statusEl.innerHTML =
+                "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
         } else {
             // no issues, show cute check mark
-            statusEl.innerHTML = 
-            "<i class='fas fa-check-square status-icon icon-success'></i>";
+            statusEl.innerHTML =
+                "<i class='fas fa-check-square status-icon icon-success'></i>";
         }
 
         //append to repo name and issues to list item
