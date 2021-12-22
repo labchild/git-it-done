@@ -7,20 +7,29 @@ function getRepoName() {
     var queryString = document.location.search;
     var repoName = queryString.split('=')[1];
 
-    repoNameEl.textContent = repoName;
-    getRepoIssues(repoName);
+    // validate repoName
+    if (repoName) {
+        // if exists, print repo name to page and show issues
+        repoNameEl.textContent = repoName;
+        getRepoIssues(repoName);
+    } else {
+        // if no repo name given, redirect to homepage
+        document.location.replace('./index.html');
+    }
+
+
 };
 
 // request issues from github
 function getRepoIssues(repo) {
     // set api url
     var apiUrl = 'https://api.github.com/repos/' + repo + '/issues?direction=asc';
-    
+
     // get data
-    fetch(apiUrl).then(function(response){
+    fetch(apiUrl).then(function (response) {
         // request successful
         if (response.ok) {
-            response.json().then(function(data){
+            response.json().then(function (data) {
                 displayIssues(data);
 
                 // check if more than 30 issues
@@ -31,7 +40,8 @@ function getRepoIssues(repo) {
         }
         // there is an error
         else {
-            alert('There was a problem with your request!');
+            // redirect to homepage
+            document.location.replace('./index.html');
         }
     });
 };
@@ -39,12 +49,12 @@ function getRepoIssues(repo) {
 // display the issues on page
 function displayIssues(issues) {
     // loop over issues to create links to issues
-    for (var i=0; i < issues.length; i++) {
+    for (var i = 0; i < issues.length; i++) {
         var issuesEl = document.createElement('a');
         issuesEl.classList = "list-item flex-row justify-space-between align-center";
         issuesEl.setAttribute("href", issues[i].html_url);
         issuesEl.setAttribute("target", "_blank");
-        
+
         // create span for title
         var titleEl = document.createElement("span");
         titleEl.textContent = issues[i].title;
