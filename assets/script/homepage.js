@@ -52,8 +52,9 @@ function displayRepos(repos, searchTerm) {
         //format repo name
         var repoName = repos[i].full_name;
         // create container for each repo
-        var repoEl = document.createElement("div");
+        var repoEl = document.createElement("a");
         repoEl.classList = "list-item flex-row justify-space-between align-center";
+        repoEl.setAttribute("href", "./single-repo.html?repo=" + repoName);
         // create span el for repoName
         var titleEl = document.createElement("span");
         titleEl.textContent = repoName;
@@ -81,5 +82,5 @@ function displayRepos(repos, searchTerm) {
     }
 }
 
-// getUserRepos();
+// listener to begin search
 userFormEl.addEventListener("submit", formSubmitHandler);

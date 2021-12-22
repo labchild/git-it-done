@@ -1,8 +1,18 @@
 var issueContainerEl = document.querySelector('#issues-container');
+var limitWarningEl = document.querySelector("#limit-warning");
+var repoNameEl = document.querySelector("#repo-name");
+
+// get selected repo name 
+function getRepoName() {
+    var queryString = document.location.search;
+    var repoName = queryString.split('=')[1];
+
+    repoNameEl.textContent = repoName;
+    getRepoIssues(repoName);
+};
 
 // request issues from github
 function getRepoIssues(repo) {
-    console.log(repo);
     // set api url
     var apiUrl = 'https://api.github.com/repos/' + repo + '/issues?direction=asc';
     
@@ -12,7 +22,11 @@ function getRepoIssues(repo) {
         if (response.ok) {
             response.json().then(function(data){
                 displayIssues(data);
-                console.log(data);
+
+                // check if more than 30 issues
+                if (response.headers.get('link')) {
+                    displayWarning(data);
+                }
             });
         }
         // there is an error
@@ -51,7 +65,21 @@ function displayIssues(issues) {
         // append issue to page
         issueContainerEl.appendChild(issuesEl);
     };
+};
 
-    
-}
-getRepoIssues("labchild/git-it-done");
+// function to indicate more issues
+function displayWarning(repo) {
+    // add text to warning container
+    limitWarningEl.textContent = "There are more than 30 issues. To see more, ";
+
+    // add link to repo issues on GitHub
+    var linkEl = document.createElement('a');
+    linkEl.textContent = "view this repo GitHub.com";
+    linkEl.setAttribute('href', 'https://github.com/' + repo + '/issues');
+    // append link to warning container
+    limitWarningEl.appendChild(linkEl);
+};
+
+// function calls
+getRepoName();
+// getRepoIssues("google/material-design-lite");
